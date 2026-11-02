@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Safi School Management System</title>
+<style>
+:root{--navy:#172554;--blue:#2563eb;--bg:#f3f6fb;--text:#172033;--muted:#64748b;--line:#e5eaf2;--white:#fff;--green:#15803d;--red:#dc2626}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+.app{min-height:100vh;display:flex}
+.sidebar{width:245px;background:var(--navy);color:#fff;padding:24px 16px;flex-shrink:0}
+.brand{font-size:20px;font-weight:700;padding:8px 10px 28px;line-height:1.4}
+.brand small{display:block;font-size:11px;font-weight:400;color:#bfdbfe;margin-top:5px;letter-spacing:1px}
+.nav-title{font-size:11px;color:#94a3b8;text-transform:uppercase;padding:12px 10px 8px;letter-spacing:1px}
+.nav-btn{display:flex;width:100%;border:0;background:transparent;color:#dbeafe;text-align:left;padding:12px 13px;margin:3px 0;border-radius:8px;font-size:14px;cursor:pointer}
+.nav-btn:hover,.nav-btn.active{background:#29427d;color:#fff}
+.main{flex:1;min-width:0}
+.topbar{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 30px}
+.topbar strong{font-size:14px}.topbar span{font-size:13px;color:var(--muted)}
+.content{padding:30px;max-width:1400px;margin:auto}
+.page-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:24px}
+h1{font-size:25px;margin:0 0 7px}h2{font-size:17px;margin:0 0 18px}
+.subtitle{color:var(--muted);font-size:14px;margin:0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:25px}
+.card,.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;box-shadow:0 2px 8px #0f172a08}
+.card .label{font-size:13px;color:var(--muted)}.card .number{font-size:29px;font-weight:700;margin-top:12px}
+.panel{margin-bottom:20px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}
+input,select{width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:7px;font-size:14px;background:#fff;color:var(--text);outline:none}
+input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2563eb18}
+.form-actions{display:flex;gap:9px;margin-top:16px}
+button{font-family:inherit}
+.btn{border:0;border-radius:7px;padding:10px 15px;font-weight:600;font-size:13px;cursor:pointer}
+.primary{background:var(--blue);color:white}.primary:hover{background:#1d4ed8}
+.secondary{background:#e2e8f0;color:#334155}.danger{background:#fee2e2;color:#b91c1c}
+.small-btn{padding:7px 10px;font-size:12px;margin:2px}
+.toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:15px}
+.search{max-width:390px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:650px}
+th,td{padding:13px 12px;text-align:left;border-bottom:1px solid var(--line);font-size:13px}
+th{color:#475569;background:#f8fafc;font-weight:700}
+td{color:#334155}
+.empty{text-align:center;color:var(--muted);padding:28px}
+.notice{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:14px;border-radius:9px;font-size:14px;line-height:1.6}
+.hidden{display:none!important}
+@media(max-width:900px){.sidebar{width:205px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.content{padding:22px}}
+@media(max-width:620px){.app{display:block}.sidebar{width:100%;padding:12px}.brand{padding:8px 8px 12px}.nav-title{display:none}.nav-list{display:flex;overflow-x:auto;gap:5px}.nav-btn{white-space:nowrap;width:auto;margin:0;padding:10px}.topbar{height:55px;padding:0 16px}.content{padding:17px}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{padding:14px}.card .number{font-size:24px}.form-grid{grid-template-columns:1fr}.page-head{align-items:flex-start;flex-direction:column}.toolbar{align-items:stretch;flex-direction:column}.search{max-width:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">SAFI SCHOOL<small>MANAGEMENT SYSTEM</small></div>
+    <div class="nav-title">Main menu</div>
+    <nav class="nav-list">
+      <button class="nav-btn active" data-page="Dashboard">Dashboard</button>
+      <button class="nav-btn" data-page="Students">Students</button>
+      <button class="nav-btn" data-page="Teachers">Teachers</button>
+      <button class="nav-btn" data-page="Classes">Classes</button>
+      <button class="nav-btn" data-page="Attendance">Attendance</button>
+      <button class="nav-btn" data-page="Exams">Exams &amp; Results</button>
+      <button class="nav-btn" data-page="Fees">Fees</button>
+      <button class="nav-btn" data-page="Settings">Settings</button>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <strong id="topTitle">Dashboard</strong>
+      <span>School Administration</span>
+    </header>
+    <section class="content" id="pageContent"></section>
+  </main>
+</div>
+
+<script>
+"use strict";
+
+/* Safi SMS - current working version.
+   Student records are saved in this browser using localStorage.
+*/
+const STORAGE_KEY = "students";
+let students = loadStudents();
+let teachers = loadTeachers();
+let classes = loadClasses();
+let attendanceRecords = loadAttendance();
+let examResults = loadExamResults();
+let editingResultKey = null;
+let editingStudentId = null;
+let editingTeacherId = null;
+let editingClassId = null;
+let currentPage = "Dashboard";
+
+function loadStudents() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    return Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    console.error("Could not read saved students:", error);
+    return [];
+  }
+}
+
+function saveStudents() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
+    return true;
+  } catch (error) {
+    alert("Could not save data in this browser. Storage may be full or disabled.");
+    console.error(error);
+    return false;
+  }
+}
+
+function loadTeachers() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("teachers") || "[]");
+    return Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    console.error("Could not read saved teachers:", error);
+    return [];
+  }
+}
+
+function saveTeachers() {
+  try {
+    localStorage.setItem("teachers", JSON.stringify(teachers));
+    return true;
+  } catch (error) {
+    alert("Could not save teacher data in this browser.");
+    console.error(error);
+    return false;
+  }
+}
+
+function loadClasses() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("schoolClasses") || "[]");
+    return Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    console.error("Could not read saved classes:", error);
+    return [];
+  }
+}
+
+function saveClasses() {
+  try {
+    localStorage.setItem("schoolClasses", JSON.stringify(classes));
+    return true;
+  } catch (error) {
+    alert("Could not save class data in this browser.");
+    console.error(error);
+    return false;
+  }
+}
+
+function loadAttendance() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("attendanceRecords") || "[]");
+    return Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    console.error("Could not read attendance records:", error);
+    return [];
+  }
+}
+
+function saveAttendance() {
+  try {
+    localStorage.setItem("attendanceRecords", JSON.stringify(attendanceRecords));
+    return true;
+  } catch (error) {
+    alert("Could not save attendance data in this browser.");
+    console.error(error);
+    return false;
+  }
+}
+
+function loadExamResults() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("examResults") || "[]");
+    return Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    console.error("Could not read exam results:", error);
+    return [];
+  }
+}
+
+function saveExamResults() {
+  try {
+    localStorage.setItem("examResults", JSON.stringify(examResults));
+    return true;
+  } catch (error) {
+    alert("Could not save exam results in this browser.");
+    console.error(error);
+    return false;
+  }
+}
+
+function makeId(value) {
+  return String(value ?? "").trim().toLowerCase();
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[char]));
+}
+
+function setActiveNav(page) {
+  document.querySelectorAll(".nav-btn").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === page);
+  });
+}
+
+function showPage(page) {
+  currentPage = page;
+  editingStudentId = null;
+  setActiveNav(page);
+  document.getElementById("topTitle").textContent = page;
+  const content = document.getElementById("pageContent");
+
+  if (page === "Dashboard") renderDashboard(content);
+  else if (page === "Students") renderStudents(content);
+  else if (page === "Teachers") renderTeachers(content);
+  else if (page === "Classes") renderClasses(content);
+  else if (page === "Attendance") renderAttendance(content);
+  else if (page === "Exams") renderExams(content);
+  else renderComingSoon(content, page);
+}
+
+function renderDashboard(content) {
+  content.innerHTML = `
+    <div class="page-head"><div><h1>Dashboard</h1><p class="subtitle">Welcome to Safi School Management System.</p></div></div>
+    <div class="stats">
+      <div class="card"><div class="label">Total Students</div><div class="number">${students.length}</div></div>
+      <div class="card"><div class="label">Total Teachers</div><div class="number">${teachers.length}</div></div>
+      <div class="card"><div class="label">Total Classes</div><div class="number">${classes.length}</div></div>
+      <div class="card"><div class="label">Attendance</div><div class="number">—</div></div>
+    </div>
+    <div class="panel"><h2>Welcome</h2><p class="subtitle">Use the menu to manage student records. The Students section currently supports adding, editing, deleting, and searching students.</p></div>
+  `;
+}
+
+function renderStudents(content) {
+  content.innerHTML = `
+    <div class="page-head">
+      <div><h1>Students Management</h1><p class="subtitle">Register and manage student information.</p></div>
+    </div>
+
+    <div class="panel">
+      <h2 id="formTitle">Add New Student</h2>
+      <form id="studentForm">
+        <div class="form-grid">
+          <div class="field"><label for="studentName">Student Name</label><input id="studentName" type="text" maxlength="80" required placeholder="Enter student name"></div>
+          <div class="field"><label for="fatherName">Father Name</label><input id="fatherName" type="text" maxlength="80" required placeholder="Enter father's name"></div>
+          <div class="field"><label for="studentID">Student ID</label><input id="studentID" type="text" maxlength="30" required placeholder="Enter unique student ID"></div>
+          <div class="field"><label for="studentClass">Class</label><input id="studentClass" type="text" maxlength="30" required placeholder="Example: Grade 10"></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn primary" type="submit" id="submitButton">Add Student</button>
+          <button class="btn secondary hidden" type="button" id="cancelButton">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="toolbar">
+        <div><h2 style="margin:0">Students List</h2></div>
+        <input class="search" id="studentSearch" type="search" placeholder="Search name, ID, father or class...">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Student ID</th><th>Student Name</th><th>Father Name</th><th>Class</th><th>Actions</th></tr></thead>
+          <tbody id="studentsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("studentForm").addEventListener("submit", saveStudentFromForm);
+  document.getElementById("cancelButton").addEventListener("click", resetStudentForm);
+  document.getElementById("studentSearch").addEventListener("input", searchStudents);
+  displayStudents();
+}
+
+function saveStudentFromForm(event) {
+  event.preventDefault();
+
+  const student = {
+    name: document.getElementById("studentName").value.trim(),
+    father: document.getElementById("fatherName").value.trim(),
+    id: document.getElementById("studentID").value.trim(),
+    className: document.getElementById("studentClass").value.trim()
+  };
+
+  if (!student.name || !student.father || !student.id || !student.className) {
+    alert("Please complete all fields.");
+    return;
+  }
+
+  const duplicate = students.some(item =>
+    makeId(item.id) === makeId(student.id) &&
+    makeId(item.id) !== makeId(editingStudentId)
+  );
+
+  if (duplicate) {
+    alert("This Student ID already exists. Please use a different ID.");
+    document.getElementById("studentID").focus();
+    return;
+  }
+
+  if (editingStudentId !== null) {
+    const index = students.findIndex(item => makeId(item.id) === makeId(editingStudentId));
+    if (index === -1) {
+      alert("Student record was not found. Please try again.");
+      resetStudentForm();
+      return;
+    }
+    students[index] = student;
+  } else {
+    students.push(student);
+  }
+
+  if (!saveStudents()) return;
+
+  const wasEditing = editingStudentId !== null;
+  resetStudentForm();
+  displayStudents();
+  if (wasEditing) alert("Student information updated successfully.");
+  else alert("Student added successfully.");
+}
+
+function displayStudents(list = students) {
+  const tbody = document.getElementById("studentsTableBody");
+  if (!tbody) return;
+
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td class="empty" colspan="5">${students.length ? "No matching students found." : "No students registered yet. Use the form above to add the first student."}</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map(student => `
+    <tr>
+      <td>${escapeHTML(student.id)}</td>
+      <td>${escapeHTML(student.name)}</td>
+      <td>${escapeHTML(student.father)}</td>
+      <td>${escapeHTML(student.className)}</td>
+      <td>
+        <button class="btn secondary small-btn" data-action="edit" data-id="${escapeHTML(student.id)}">Edit</button>
+        <button class="btn danger small-btn" data-action="delete" data-id="${escapeHTML(student.id)}">Delete</button>
+      </td>
+    </tr>
+  `).join("");
+
+  tbody.querySelectorAll("button[data-action]").forEach(button => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.id;
+      if (button.dataset.action === "edit") editStudent(id);
+      if (button.dataset.action === "delete") deleteStudent(id);
+    });
+  });
+}
+
+function editStudent(id) {
+  const student = students.find(item => makeId(item.id) === makeId(id));
+  if (!student) {
+    alert("Student record not found.");
+    return;
+  }
+
+  editingStudentId = student.id;
+  document.getElementById("studentName").value = student.name;
+  document.getElementById("fatherName").value = student.father;
+  document.getElementById("studentID").value = student.id;
+  document.getElementById("studentClass").value = student.className;
+  document.getElementById("formTitle").textContent = "Edit Student";
+  document.getElementById("submitButton").textContent = "Update Student";
+  document.getElementById("cancelButton").classList.remove("hidden");
+  document.getElementById("studentForm").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function deleteStudent(id) {
+  const student = students.find(item => makeId(item.id) === makeId(id));
+  if (!student) {
+    alert("Student record not found.");
+    return;
+  }
+
+  if (!confirm(`Delete ${student.name} (ID: ${student.id})? This cannot be undone.`)) return;
+
+  students = students.filter(item => makeId(item.id) !== makeId(id));
+  if (!saveStudents()) return;
+  displayStudents();
+}
+
+function searchStudents() {
+  const query = makeId(document.getElementById("studentSearch").value);
+  const filtered = students.filter(student =>
+    [student.id, student.name, student.father, student.className]
+      .some(value => makeId(value).includes(query))
+  );
+  displayStudents(filtered);
+}
+
+function resetStudentForm() {
+  editingStudentId = null;
+  const form = document.getElementById("studentForm");
+  if (!form) return;
+  form.reset();
+  document.getElementById("formTitle").textContent = "Add New Student";
+  document.getElementById("submitButton").textContent = "Add Student";
+  document.getElementById("cancelButton").classList.add("hidden");
+}
+
+
+function renderTeachers(content) {
+  editingTeacherId = null;
+  content.innerHTML = `
+    <div class="page-head">
+      <div><h1>Teachers Management</h1><p class="subtitle">Register and manage teacher information.</p></div>
+    </div>
+    <div class="panel">
+      <h2 id="teacherFormTitle">Add New Teacher</h2>
+      <form id="teacherForm">
+        <div class="form-grid">
+          <div class="field"><label for="teacherName">Teacher Name</label><input id="teacherName" required maxlength="80" placeholder="Enter teacher name"></div>
+          <div class="field"><label for="teacherID">Teacher ID</label><input id="teacherID" required maxlength="30" placeholder="Enter unique teacher ID"></div>
+          <div class="field"><label for="teacherSubject">Subject</label><input id="teacherSubject" required maxlength="60" placeholder="Example: Mathematics"></div>
+          <div class="field"><label for="teacherPhone">Phone Number</label><input id="teacherPhone" type="tel" maxlength="30" placeholder="Enter phone number"></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn primary" type="submit" id="teacherSubmitButton">Add Teacher</button>
+          <button class="btn secondary hidden" type="button" id="teacherCancelButton">Cancel</button>
+        </div>
+      </form>
+    </div>
+    <div class="panel">
+      <div class="toolbar">
+        <h2 style="margin:0">Teachers List</h2>
+        <input class="search" id="teacherSearch" type="search" placeholder="Search name, ID, subject or phone...">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Teacher ID</th><th>Teacher Name</th><th>Subject</th><th>Phone</th><th>Actions</th></tr></thead>
+          <tbody id="teachersTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("teacherForm").addEventListener("submit", saveTeacherFromForm);
+  document.getElementById("teacherCancelButton").addEventListener("click", resetTeacherForm);
+  document.getElementById("teacherSearch").addEventListener("input", searchTeachers);
+  displayTeachers();
+}
+
+function saveTeacherFromForm(event) {
+  event.preventDefault();
+  const teacher = {
+    name: document.getElementById("teacherName").value.trim(),
+    id: document.getElementById("teacherID").value.trim(),
+    subject: document.getElementById("teacherSubject").value.trim(),
+    phone: document.getElementById("teacherPhone").value.trim()
+  };
+
+  if (!teacher.name || !teacher.id || !teacher.subject) {
+    alert("Please complete all required fields.");
+    return;
+  }
+
+  const duplicate = teachers.some(item =>
+    makeId(item.id) === makeId(teacher.id) &&
+    makeId(item.id) !== makeId(editingTeacherId)
+  );
+  if (duplicate) {
+    alert("This Teacher ID already exists.");
+    return;
+  }
+
+  if (editingTeacherId !== null) {
+    const index = teachers.findIndex(item => makeId(item.id) === makeId(editingTeacherId));
+    if (index === -1) {
+      alert("Teacher record was not found.");
+      resetTeacherForm();
+      return;
+    }
+    teachers[index] = teacher;
+  } else {
+    teachers.push(teacher);
+  }
+
+  if (!saveTeachers()) return;
+  const wasEditing = editingTeacherId !== null;
+  resetTeacherForm();
+  displayTeachers();
+  alert(wasEditing ? "Teacher updated successfully." : "Teacher added successfully.");
+}
+
+function displayTeachers(list = teachers) {
+  const tbody = document.getElementById("teachersTableBody");
+  if (!tbody) return;
+
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td class="empty" colspan="5">${teachers.length ? "No matching teachers found." : "No teachers registered yet. Use the form above to add the first teacher."}</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map(teacher => `
+    <tr>
+      <td>${escapeHTML(teacher.id)}</td>
+      <td>${escapeHTML(teacher.name)}</td>
+      <td>${escapeHTML(teacher.subject)}</td>
+      <td>${escapeHTML(teacher.phone || "—")}</td>
+      <td>
+        <button class="btn secondary small-btn" data-teacher-action="edit" data-id="${escapeHTML(teacher.id)}">Edit</button>
+        <button class="btn danger small-btn" data-teacher-action="delete" data-id="${escapeHTML(teacher.id)}">Delete</button>
+      </td>
+    </tr>
+  `).join("");
+
+  tbody.querySelectorAll("button[data-teacher-action]").forEach(button => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.id;
+      if (button.dataset.teacherAction === "edit") editTeacher(id);
+      if (button.dataset.teacherAction === "delete") deleteTeacher(id);
+    });
+  });
+}
+
+function editTeacher(id) {
+  const teacher = teachers.find(item => makeId(item.id) === makeId(id));
+  if (!teacher) {
+    alert("Teacher record not found.");
+    return;
+  }
+  editingTeacherId = teacher.id;
+  document.getElementById("teacherName").value = teacher.name;
+  document.getElementById("teacherID").value = teacher.id;
+  document.getElementById("teacherSubject").value = teacher.subject;
+  document.getElementById("teacherPhone").value = teacher.phone || "";
+  document.getElementById("teacherFormTitle").textContent = "Edit Teacher";
+  document.getElementById("teacherSubmitButton").textContent = "Update Teacher";
+  document.getElementById("teacherCancelButton").classList.remove("hidden");
+  document.getElementById("teacherForm").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function deleteTeacher(id) {
+  const teacher = teachers.find(item => makeId(item.id) === makeId(id));
+  if (!teacher) {
+    alert("Teacher record not found.");
+    return;
+  }
+  if (!confirm(`Delete ${teacher.name} (ID: ${teacher.id})? This cannot be undone.`)) return;
+  teachers = teachers.filter(item => makeId(item.id) !== makeId(id));
+  if (!saveTeachers()) return;
+  displayTeachers();
+}
+
+function searchTeachers() {
+  const query = makeId(document.getElementById("teacherSearch").value);
+  const filtered = teachers.filter(teacher =>
+    [teacher.id, teacher.name, teacher.subject, teacher.phone]
+      .some(value => makeId(value).includes(query))
+  );
+  displayTeachers(filtered);
+}
+
+function resetTeacherForm() {
+  editingTeacherId = null;
+  const form = document.getElementById("teacherForm");
+  if (!form) return;
+  form.reset();
+  document.getElementById("teacherFormTitle").textContent = "Add New Teacher";
+  document.getElementById("teacherSubmitButton").textContent = "Add Teacher";
+  document.getElementById("teacherCancelButton").classList.add("hidden");
+}
+
+
+function renderClasses(content) {
+  editingClassId = null;
+  content.innerHTML = `
+    <div class="page-head">
+      <div><h1>Classes Management</h1><p class="subtitle">Create and manage school classes.</p></div>
+    </div>
+    <div class="panel">
+      <h2 id="classFormTitle">Add New Class</h2>
+      <form id="classForm">
+        <div class="form-grid">
+          <div class="field"><label for="className">Class Name</label><input id="className" required maxlength="40" placeholder="Example: Grade 10 - A"></div>
+          <div class="field"><label for="classTeacher">Class Teacher (optional)</label><select id="classTeacher"><option value="">Not assigned</option>${teachers.map(t => `<option value="${escapeHTML(t.id)}">${escapeHTML(t.name)} (${escapeHTML(t.id)})</option>`).join("")}</select></div>
+          <div class="field"><label for="classRoom">Room (optional)</label><input id="classRoom" maxlength="30" placeholder="Example: Room 4"></div>
+          <div class="field"><label for="classYear">Academic Year (optional)</label><input id="classYear" maxlength="20" placeholder="Example: 2026-2027"></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn primary" type="submit" id="classSubmitButton">Add Class</button>
+          <button class="btn secondary hidden" type="button" id="classCancelButton">Cancel</button>
+        </div>
+      </form>
+    </div>
+    <div class="panel">
+      <div class="toolbar">
+        <h2 style="margin:0">Classes List</h2>
+        <input class="search" id="classSearch" type="search" placeholder="Search class, teacher, room or year...">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Class Name</th><th>Class Teacher</th><th>Room</th><th>Academic Year</th><th>Students</th><th>Actions</th></tr></thead>
+          <tbody id="classesTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="notice">Student counts are calculated from the Class field in each student's record. Creating a class does not automatically move students into it.</div>
+  `;
+
+  document.getElementById("classForm").addEventListener("submit", saveClassFromForm);
+  document.getElementById("classCancelButton").addEventListener("click", resetClassForm);
+  document.getElementById("classSearch").addEventListener("input", searchClasses);
+  displayClasses();
+}
+
+function saveClassFromForm(event) {
+  event.preventDefault();
+
+  const teacherId = document.getElementById("classTeacher").value;
+  const teacher = teachers.find(item => makeId(item.id) === makeId(teacherId));
+
+  const schoolClass = {
+    name: document.getElementById("className").value.trim(),
+    teacherId: teacher ? teacher.id : "",
+    teacherName: teacher ? teacher.name : "",
+    room: document.getElementById("classRoom").value.trim(),
+    year: document.getElementById("classYear").value.trim()
+  };
+
+  if (!schoolClass.name) {
+    alert("Please enter a class name.");
+    return;
+  }
+
+  const duplicate = classes.some(item =>
+    makeId(item.name) === makeId(schoolClass.name) &&
+    makeId(item.name) !== makeId(editingClassId)
+  );
+
+  if (duplicate) {
+    alert("This class name already exists.");
+    document.getElementById("className").focus();
+    return;
+  }
+
+  if (editingClassId !== null) {
+    const index = classes.findIndex(item => makeId(item.name) === makeId(editingClassId));
+    if (index === -1) {
+      alert("Class record was not found.");
+      resetClassForm();
+      return;
+    }
+
+    const oldName = classes[index].name;
+    classes[index] = schoolClass;
+
+    // Keep existing student class assignments in sync if the class is renamed.
+    if (makeId(oldName) !== makeId(schoolClass.name)) {
+      students.forEach(student => {
+        if (makeId(student.className) === makeId(oldName)) {
+          student.className = schoolClass.name;
+        }
+      });
+      if (!saveStudents()) return;
+    }
+  } else {
+    classes.push(schoolClass);
+  }
+
+  if (!saveClasses()) return;
+  const wasEditing = editingClassId !== null;
+  resetClassForm();
+  displayClasses();
+  alert(wasEditing ? "Class updated successfully." : "Class added successfully.");
+}
+
+function displayClasses(list = classes) {
+  const tbody = document.getElementById("classesTableBody");
+  if (!tbody) return;
+
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td class="empty" colspan="6">${classes.length ? "No matching classes found." : "No classes created yet. Use the form above to add the first class."}</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map(schoolClass => {
+    const studentCount = students.filter(student =>
+      makeId(student.className) === makeId(schoolClass.name)
+    ).length;
+
+    return `
+      <tr>
+        <td>${escapeHTML(schoolClass.name)}</td>
+        <td>${escapeHTML(schoolClass.teacherName || "Not assigned")}</td>
+        <td>${escapeHTML(schoolClass.room || "—")}</td>
+        <td>${escapeHTML(schoolClass.year || "—")}</td>
+        <td>${studentCount}</td>
+        <td>
+          <button class="btn secondary small-btn" data-class-action="edit" data-id="${escapeHTML(schoolClass.name)}">Edit</button>
+          <button class="btn danger small-btn" data-class-action="delete" data-id="${escapeHTML(schoolClass.name)}">Delete</button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  tbody.querySelectorAll("button[data-class-action]").forEach(button => {
+    button.addEventListener("click", () => {
+      const id = button.dataset.id;
+      if (button.dataset.classAction === "edit") editClass(id);
+      if (button.dataset.classAction === "delete") deleteClass(id);
+    });
+  });
+}
+
+function editClass(name) {
+  const schoolClass = classes.find(item => makeId(item.name) === makeId(name));
+  if (!schoolClass) {
+    alert("Class record not found.");
+    return;
+  }
+
+  editingClassId = schoolClass.name;
+  document.getElementById("className").value = schoolClass.name;
+  document.getElementById("classTeacher").value = schoolClass.teacherId || "";
+  document.getElementById("classRoom").value = schoolClass.room || "";
+  document.getElementById("classYear").value = schoolClass.year || "";
+  document.getElementById("classFormTitle").textContent = "Edit Class";
+  document.getElementById("classSubmitButton").textContent = "Update Class";
+  document.getElementById("classCancelButton").classList.remove("hidden");
+  document.getElementById("classForm").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function deleteClass(name) {
+  const schoolClass = classes.find(item => makeId(item.name) === makeId(name));
+  if (!schoolClass) {
+    alert("Class record not found.");
+    return;
+  }
+
+  const assignedCount = students.filter(student =>
+    makeId(student.className) === makeId(schoolClass.name)
+  ).length;
+
+  const warning = assignedCount
+    ? `There are ${assignedCount} student(s) assigned to this class. Deleting the class will NOT delete those student records, but their Class field will remain as "${schoolClass.name}". Continue?`
+    : `Delete class "${schoolClass.name}"?`;
+
+  if (!confirm(warning)) return;
+
+  classes = classes.filter(item => makeId(item.name) !== makeId(name));
+  if (!saveClasses()) return;
+  displayClasses();
+}
+
+function searchClasses() {
+  const query = makeId(document.getElementById("classSearch").value);
+  const filtered = classes.filter(schoolClass =>
+    [schoolClass.name, schoolClass.teacherName, schoolClass.room, schoolClass.year]
+      .some(value => makeId(value).includes(query))
+  );
+  displayClasses(filtered);
+}
+
+function resetClassForm() {
+  editingClassId = null;
+  const form = document.getElementById("classForm");
+  if (!form) return;
+  form.reset();
+  document.getElementById("classFormTitle").textContent = "Add New Class";
+  document.getElementById("classSubmitButton").textContent = "Add Class";
+  document.getElementById("classCancelButton").classList.add("hidden");
+}
+
+
+function todayISO() {
+  const now = new Date();
+  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 10);
+}
+
+function renderAttendance(content) {
+  content.innerHTML = `
+    <div class="page-head">
+      <div><h1>Attendance Management</h1><p class="subtitle">Record and review students' daily attendance.</p></div>
+    </div>
+    <div class="panel">
+      <h2>Attendance Register</h2>
+      <div class="form-grid">
+        <div class="field"><label for="attendanceDate">Attendance Date</label><input type="date" id="attendanceDate" value="${todayISO()}"></div>
+        <div class="field"><label for="attendanceClass">Filter by Class</label>
+          <select id="attendanceClass">
+            <option value="">All Classes</option>
+            ${classes.map(item => `<option value="${escapeHTML(item.name)}">${escapeHTML(item.name)}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn secondary" type="button" id="markAllPresent">Mark All Present</button>
+        <button class="btn primary" type="button" id="saveAttendance">Save Attendance</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="card"><div class="label">Present</div><div class="number" id="presentCount">0</div></div>
+      <div class="card"><div class="label">Absent</div><div class="number" id="absentCount">0</div></div>
+      <div class="card"><div class="label">Late</div><div class="number" id="lateCount">0</div></div>
+      <div class="card"><div class="label">Excused</div><div class="number" id="excusedCount">0</div></div>
+    </div>
+    <div class="panel">
+      <div class="toolbar"><h2 style="margin:0">Students Attendance</h2><input class="search" id="attendanceSearch" type="search" placeholder="Search student name or ID..."></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Student ID</th><th>Student Name</th><th>Class</th><th>Attendance Status</th></tr></thead>
+          <tbody id="attendanceTableBody"></tbody>
+        </table>
+      </div>
+      <p class="subtitle" style="margin-top:12px">Choose a status for each student, then press Save Attendance.</p>
+    </div>
+    <div class="panel"><h2>Attendance Summary</h2><p class="subtitle" id="attendanceSummaryText">Select a date to view its saved attendance summary.</p></div>
+  `;
+
+  document.getElementById("attendanceDate").addEventListener("change", renderAttendanceTable);
+  document.getElementById("attendanceClass").addEventListener("change", renderAttendanceTable);
+  document.getElementById("attendanceSearch").addEventListener("input", filterAttendanceRows);
+  document.getElementById("markAllPresent").addEventListener("click", markAllPresent);
+  document.getElementById("saveAttendance").addEventListener("click", saveDailyAttendance);
+  renderAttendanceTable();
+}
+
+function getSelectedAttendanceDate() {
+  return document.getElementById("attendanceDate")?.value || todayISO();
+}
+
+function getAttendanceStudents() {
+  const selectedClass = document.getElementById("attendanceClass")?.value || "";
+  return students.filter(student => !selectedClass || makeId(student.className) === makeId(selectedClass));
+}
+
+function findAttendanceRecord(date, studentId) {
+  return attendanceRecords.find(record =>
+    record.date === date && makeId(record.studentId) === makeId(studentId)
+  );
+}
+
+function renderAttendanceTable() {
+  const tbody = document.getElementById("attendanceTableBody");
+  if (!tbody) return;
+
+  const date = getSelectedAttendanceDate();
+  const selectedStudents = getAttendanceStudents();
+
+  if (!selectedStudents.length) {
+    tbody.innerHTML = `<tr><td class="empty" colspan="4">${students.length ? "No students in this class. Check the Class field in Students Management." : "No students registered yet. Add students first in Students Management."}</td></tr>`;
+  } else {
+    tbody.innerHTML = selectedStudents.map(student => {
+      const record = findAttendanceRecord(date, student.id);
+      const status = record ? record.status : "";
+      return `
+        <tr data-attendance-row="true">
+          <td>${escapeHTML(student.id)}</td>
+          <td>${escapeHTML(student.name)}</td>
+          <td>${escapeHTML(student.className)}</td>
+          <td><select class="attendance-status" data-student-id="${escapeHTML(student.id)}" aria-label="Attendance status">
+            <option value="" ${status === "" ? "selected" : ""}>Not marked</option>
+            <option value="Present" ${status === "Present" ? "selected" : ""}>Present</option>
+            <option value="Absent" ${status === "Absent" ? "selected" : ""}>Absent</option>
+            <option value="Late" ${status === "Late" ? "selected" : ""}>Late</option>
+            <option value="Excused" ${status === "Excused" ? "selected" : ""}>Excused</option>
+          </select></td>
+        </tr>`;
+    }).join("");
+  }
+
+  updateAttendanceStats();
+  updateAttendanceSummary();
+  filterAttendanceRows();
+}
+
+function markAllPresent() {
+  const selects = document.querySelectorAll("#attendanceTableBody .attendance-status");
+  if (!selects.length) {
+    alert("There are no students to mark.");
+    return;
+  }
+  selects.forEach(select => { select.value = "Present"; });
+  updateAttendanceStats();
+}
+
+function saveDailyAttendance() {
+  const date = getSelectedAttendanceDate();
+  if (!date) {
+    alert("Please select an attendance date.");
+    return;
+  }
+
+  const selects = document.querySelectorAll("#attendanceTableBody .attendance-status");
+  if (!selects.length) {
+    alert("There are no students to save attendance for.");
+    return;
+  }
+
+  const unmarked = Array.from(selects).filter(select => !select.value);
+  if (unmarked.length) {
+    alert(`Please select a status for all ${unmarked.length} unmarked student(s).`);
+    return;
+  }
+
+  const visibleIds = new Set(Array.from(selects).map(select => makeId(select.dataset.studentId)));
+  attendanceRecords = attendanceRecords.filter(record =>
+    record.date !== date || !visibleIds.has(makeId(record.studentId))
+  );
+
+  selects.forEach(select => attendanceRecords.push({
+    date,
+    studentId: select.dataset.studentId,
+    status: select.value
+  }));
+
+  if (!saveAttendance()) return;
+  updateAttendanceStats();
+  updateAttendanceSummary();
+  alert("Attendance saved successfully.");
+}
+
+function updateAttendanceStats() {
+  const date = getSelectedAttendanceDate();
+  const ids = new Set(getAttendanceStudents().map(student => makeId(student.id)));
+  const records = attendanceRecords.filter(record => record.date === date && ids.has(makeId(record.studentId)));
+  const counts = {Present:0, Absent:0, Late:0, Excused:0};
+  records.forEach(record => {
+    if (Object.prototype.hasOwnProperty.call(counts, record.status)) counts[record.status]++;
+  });
+  document.getElementById("presentCount").textContent = counts.Present;
+  document.getElementById("absentCount").textContent = counts.Absent;
+  document.getElementById("lateCount").textContent = counts.Late;
+  document.getElementById("excusedCount").textContent = counts.Excused;
+}
+
+function updateAttendanceSummary() {
+  const date = getSelectedAttendanceDate();
+  const ids = new Set(getAttendanceStudents().map(student => makeId(student.id)));
+  const records = attendanceRecords.filter(record => record.date === date && ids.has(makeId(record.studentId)));
+  const total = getAttendanceStudents().length;
+  const present = records.filter(record => record.status === "Present").length;
+  const absent = records.filter(record => record.status === "Absent").length;
+  const late = records.filter(record => record.status === "Late").length;
+  const excused = records.filter(record => record.status === "Excused").length;
+  const marked = records.length;
+  const rate = marked ? Math.round(present / marked * 100) : 0;
+  document.getElementById("attendanceSummaryText").textContent =
+    `${date}: ${marked} of ${total} student(s) marked. Present: ${present}, Absent: ${absent}, Late: ${late}, Excused: ${excused}. Present rate among marked students: ${rate}%.`;
+}
+
+function filterAttendanceRows() {
+  const query = makeId(document.getElementById("attendanceSearch")?.value || "");
+  document.querySelectorAll("#attendanceTableBody tr[data-attendance-row]").forEach(row => {
+    row.hidden = !row.textContent.toLowerCase().includes(query);
+  });
+}
+
+
+function resultKey(result) {
+  return [makeId(result.examName), makeId(result.studentId)].join("::");
+}
+
+function calculateGrade(percentage) {
+  if (percentage >= 90) return "A+";
+  if (percentage >= 80) return "A";
+  if (percentage >= 70) return "B";
+  if (percentage >= 60) return "C";
+  if (percentage >= 50) return "D";
+  return "F";
+}
+
+function renderExams(content) {
+  editingResultKey = null;
+  content.innerHTML = `
+    <div class="page-head">
+      <div><h1>Exams &amp; Results</h1><p class="subtitle">Enter subject marks and calculate student results.</p></div>
+    </div>
+
+    <div class="notice" style="margin-bottom:20px">
+      <strong>Grading rule in this version:</strong> A+ 90–100%, A 80–89%, B 70–79%, C 60–69%, D 50–59%, F below 50%. Pass mark is 50%. These rules can be changed later to match your school's official grading policy.
+    </div>
+
+    <div class="panel">
+      <h2 id="resultFormTitle">Add Exam Result</h2>
+      <form id="resultForm">
+        <div class="form-grid">
+          <div class="field"><label for="examName">Exam Name</label><input id="examName" required maxlength="80" placeholder="Example: Midterm Exam"></div>
+          <div class="field"><label for="examDate">Exam Date</label><input id="examDate" type="date" required></div>
+          <div class="field"><label for="resultStudent">Student</label>
+            <select id="resultStudent" required>
+              <option value="">Select student</option>
+              ${students.map(s => `<option value="${escapeHTML(s.id)}">${escapeHTML(s.name)} — ${escapeHTML(s.id)} (${escapeHTML(s.className)})</option>`).join("")}
+            </select>
+          </div>
+          <div class="field"><label for="resultSubject">Subject</label><input id="resultSubject" required maxlength="60" placeholder="Example: Mathematics"></div>
+          <div class="field"><label for="obtainedMarks">Obtained Marks</label><input id="obtainedMarks" type="number" min="0" step="0.01" required placeholder="Example: 78"></div>
+          <div class="field"><label for="totalMarks">Total Marks</label><input id="totalMarks" type="number" min="0.01" step="0.01" required placeholder="Example: 100"></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn primary" type="submit" id="resultSubmitButton">Save Result</button>
+          <button class="btn secondary hidden" type="button" id="resultCancelButton">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="toolbar">
+        <h2 style="margin:0">Results Records</h2>
+        <input class="search" id="resultSearch" type="search" placeholder="Search student, exam, subject or class...">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Exam</th><th>Student</th><th>Class</th><th>Subject</th><th>Marks</th><th>Percentage</th><th>Grade</th><th>Result</th><th>Actions</th></tr></thead>
+          <tbody id="resultsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Student Marksheet</h2>
+      <div class="form-grid">
+        <div class="field"><label for="marksheetStudent">Select Student</label>
+          <select id="marksheetStudent">
+            <option value="">Select student</option>
+            ${students.map(s => `<option value="${escapeHTML(s.id)}">${escapeHTML(s.name)} — ${escapeHTML(s.id)}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field"><label for="marksheetExam">Exam Name</label><input id="marksheetExam" placeholder="Enter exact exam name"></div>
+      </div>
+      <div class="form-actions"><button class="btn primary" type="button" id="showMarksheet">Generate Marksheet</button></div>
+      <div id="marksheetOutput" style="margin-top:18px"></div>
+    </div>
+  `;
+
+  document.getElementById("resultForm").addEventListener("submit", saveResultFromForm);
+  document.getElementById("resultCancelButton").addEventListener("click", resetResultForm);
+  document.getElementById("resultSearch").addEventListener("input", searchResults);
+  document.getElementById("showMarksheet").addEventListener("click", generateMarksheet);
+  document.getElementById("examDate").value = todayISO();
+
+  if (!students.length) {
+    document.getElementById("resultForm").querySelectorAll("input, select, button[type='submit']").forEach(el => el.disabled = true);
+    document.getElementById("resultFormTitle").textContent = "Register students first";
+  }
+
+  displayResults();
+}
+
+function saveResultFromForm(event) {
+  event.preventDefault();
+
+  const studentId = document.getElementById("resultStudent").value;
+  const student = students.find(s => makeId(s.id) === makeId(studentId));
+  if (!student) {
+    alert("Please select a registered student.");
+    return;
+  }
+
+  const examName = document.getElementById("examName").value.trim();
+  const examDate = document.getElementById("examDate").value;
+  const subject = document.getElementById("resultSubject").value.trim();
+  const obtained = Number(document.getElementById("obtainedMarks").value);
+  const total = Number(document.getElementById("totalMarks").value);
+
+  if (!examName || !examDate || !subject || !Number.isFinite(obtained) || !Number.isFinite(total) || total <= 0 || obtained < 0 || obtained > total) {
+    alert("Check the exam details and marks. Obtained marks must be between 0 and total marks.");
+    return;
+  }
+
+  const result = {
+    examName,
+    examDate,
+    studentId: student.id,
+    studentName: student.name,
+    className: student.className,
+    subject,
+    obtainedMarks: obtained,
+    totalMarks: total,
+    percentage: Number((obtained / total * 100).toFixed(2))
+  };
+  result.grade = calculateGrade(result.percentage);
+  result.status = result.percentage >= 50 ? "Pass" : "Fail";
+
+  const newKey = resultKey(result);
+  const duplicate = examResults.some(item =>
+    resultKey(item) === newKey && resultKey(item) !== editingResultKey
+  );
+  if (duplicate) {
+    alert("A result for this student, exam and subject already exists. Edit the existing record instead.");
+    return;
+  }
+
+  if (editingResultKey !== null) {
+    const index = examResults.findIndex(item => resultKey(item) === editingResultKey);
+    if (index === -1) {
+      alert("Result record was not found.");
+      resetResultForm();
+      return;
+    }
+    examResults[index] = result;
+  } else {
+    examResults.push(result);
+  }
+
+  if (!saveExamResults()) return;
+  const wasEditing = editingResultKey !== null;
+  resetResultForm();
+  displayResults();
+  alert(wasEditing ? "Result updated successfully." : "Result saved successfully.");
+}
+
+function displayResults(list = examResults) {
+  const tbody = document.getElementById("resultsTableBody");
+  if (!tbody) return;
+
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td class="empty" colspan="9">${examResults.length ? "No matching results found." : "No results entered yet."}</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map(result => `
+    <tr>
+      <td>${escapeHTML(result.examName)}<br><small>${escapeHTML(result.examDate)}</small></td>
+      <td>${escapeHTML(result.studentName)}<br><small>${escapeHTML(result.studentId)}</small></td>
+      <td>${escapeHTML(result.className)}</td>
+      <td>${escapeHTML(result.subject)}</td>
+      <td>${Number(result.obtainedMarks)} / ${Number(result.totalMarks)}</td>
+      <td>${Number(result.percentage).toFixed(2)}%</td>
+      <td>${escapeHTML(result.grade)}</td>
+      <td>${escapeHTML(result.status)}</td>
+      <td>
+        <button class="btn secondary small-btn" data-result-action="edit" data-key="${escapeHTML(resultKey(result))}">Edit</button>
+        <button class="btn danger small-btn" data-result-action="delete" data-key="${escapeHTML(resultKey(result))}">Delete</button>
+      </td>
+    </tr>
+  `).join("");
+
+  tbody.querySelectorAll("button[data-result-action]").forEach(button => {
+    button.addEventListener("click", () => {
+      const key = button.dataset.key;
+      if (button.dataset.resultAction === "edit") editResult(key);
+      if (button.dataset.resultAction === "delete") deleteResult(key);
+    });
+  });
+}
+
+function editResult(key) {
+  const result = examResults.find(item => resultKey(item) === key);
+  if (!result) {
+    alert("Result record not found.");
+    return;
+  }
+
+  editingResultKey = key;
+  document.getElementById("examName").value = result.examName;
+  document.getElementById("examDate").value = result.examDate;
+  document.getElementById("resultStudent").value = result.studentId;
+  document.getElementById("resultSubject").value = result.subject;
+  document.getElementById("obtainedMarks").value = result.obtainedMarks;
+  document.getElementById("totalMarks").value = result.totalMarks;
+  document.getElementById("resultFormTitle").textContent = "Edit Exam Result";
+  document.getElementById("resultSubmitButton").textContent = "Update Result";
+  document.getElementById("resultCancelButton").classList.remove("hidden");
+  document.getElementById("resultForm").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function deleteResult(key) {
+  const result = examResults.find(item => resultKey(item) === key);
+  if (!result) {
+    alert("Result record not found.");
+    return;
+  }
+  if (!confirm(`Delete ${result.subject} result for ${result.studentName} in ${result.examName}?`)) return;
+  examResults = examResults.filter(item => resultKey(item) !== key);
+  if (!saveExamResults()) return;
+  displayResults();
+}
+
+function searchResults() {
+  const query = makeId(document.getElementById("resultSearch").value);
+  const filtered = examResults.filter(result =>
+    [result.examName, result.examDate, result.studentName, result.studentId, result.className, result.subject, result.grade, result.status]
+      .some(value => makeId(value).includes(query))
+  );
+  displayResults(filtered);
+}
+
+function resetResultForm() {
+  editingResultKey = null;
+  const form = document.getElementById("resultForm");
+  if (!form) return;
+  form.reset();
+  document.getElementById("examDate").value = todayISO();
+  document.getElementById("resultFormTitle").textContent = "Add Exam Result";
+  document.getElementById("resultSubmitButton").textContent = "Save Result";
+  document.getElementById("resultCancelButton").classList.add("hidden");
+}
+
+function generateMarksheet() {
+  const studentId = document.getElementById("marksheetStudent").value;
+  const examName = document.getElementById("marksheetExam").value.trim();
+  const output = document.getElementById("marksheetOutput");
+
+  if (!studentId || !examName) {
+    alert("Select a student and enter the exact exam name.");
+    return;
+  }
+
+  const student = students.find(item => makeId(item.id) === makeId(studentId));
+  const records = examResults.filter(item =>
+    makeId(item.studentId) === makeId(studentId) &&
+    makeId(item.examName) === makeId(examName)
+  );
+
+  if (!student || !records.length) {
+    output.innerHTML = `<p class="subtitle">No results found for this student and exam.</p>`;
+    return;
+  }
+
+  const obtainedTotal = records.reduce((sum, item) => sum + Number(item.obtainedMarks), 0);
+  const maximumTotal = records.reduce((sum, item) => sum + Number(item.totalMarks), 0);
+  const percentage = maximumTotal ? obtainedTotal / maximumTotal * 100 : 0;
+  const grade = calculateGrade(percentage);
+  const status = percentage >= 50 && records.every(item => item.status === "Pass") ? "Pass" : "Fail";
+
+  output.innerHTML = `
+    <div class="notice">
+      <h2 style="margin:0 0 12px">Student Marksheet</h2>
+      <p><strong>Student:</strong> ${escapeHTML(student.name)} &nbsp; <strong>ID:</strong> ${escapeHTML(student.id)}</p>
+      <p><strong>Class:</strong> ${escapeHTML(student.className)} &nbsp; <strong>Exam:</strong> ${escapeHTML(records[0].examName)}</p>
+      <div class="table-wrap">
+        <table style="background:white">
+          <thead><tr><th>Subject</th><th>Obtained</th><th>Total</th><th>Percentage</th><th>Grade</th><th>Status</th></tr></thead>
+          <tbody>${records.map(item => `<tr><td>${escapeHTML(item.subject)}</td><td>${Number(item.obtainedMarks)}</td><td>${Number(item.totalMarks)}</td><td>${Number(item.percentage).toFixed(2)}%</td><td>${escapeHTML(item.grade)}</td><td>${escapeHTML(item.status)}</td></tr>`).join("")}</tbody>
+          <tfoot><tr><th>Total</th><th>${obtainedTotal}</th><th>${maximumTotal}</th><th>${percentage.toFixed(2)}%</th><th>${grade}</th><th>${status}</th></tr></tfoot>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function renderComingSoon(content, page) {
+  content.innerHTML = `
+    <div class="page-head"><div><h1>${escapeHTML(page)}</h1><p class="subtitle">Safi School Management System</p></div></div>
+    <div class="notice"><strong>This section is not active yet.</strong><br>
+    We will build this module next. The Dashboard and Students Management sections are working in this version.</div>
+  `;
+}
+
+document.querySelectorAll(".nav-btn").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.page));
+});
+
+showPage("Dashboard");
+</script>
+</body>
+</html>
